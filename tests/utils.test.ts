@@ -11,7 +11,7 @@ describe('utils', () => {
   });
 
   test('default version', async () => {
-    expect(await xls32d.utils.parse.getVersion(constants.payloadSample)).toBe('0.0.1');
+    expect(await xls32d.utils.parse.getVersion(constants.payloadSample)).toBe('0.0.1-beta');
   });
 
   test('xrpl uri', async () => {
