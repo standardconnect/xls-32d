@@ -1,4 +1,4 @@
-import * as utils from './utils';
+import utils from './utils';
 import * as helpers from './helpers';
 
-export { helpers, utils };
+export default { helpers, utils };
