@@ -1,8 +1,10 @@
+<h1 align="center">XLS-32d - Request URI Structure </h1>
+
 <p align="center">
 making payments and sharing data between platforms on the XRP Ledger.
 </p>
 
-# Introduction
+### Introduction
 
 While developing on the XRP Ledger, it is common to create a payment request schema for manufacturing and storing transaction objects in a database. These objects, and/or the architecture in which they are stored, are usually proprietary and not interoperable with other applications or tools. A well-thought schema would enable a broader ecosystem of applications that can exchange ledger-related data.
 
