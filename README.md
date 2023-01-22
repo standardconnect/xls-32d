@@ -8,7 +8,7 @@ While developing on the XRP Ledger, it is common to create a payment request sch
 
 <p align="center">
 See the full proposal
-<a rel="noopener noreferrer" target="_blank" href="./proposal/README.md">here</a>
+<a rel="noopener noreferrer" target="_blank" href="./docs/proposal.md">here</a>
 </p>
 
 <p align="center">
