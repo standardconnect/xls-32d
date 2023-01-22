@@ -7,7 +7,7 @@ type DistTagsBody = {
 };
 
 export const checkForLatestVersion = (): Promise<string> => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, _reject) => {
     let body = { latest: '0.0.1' } as DistTagsBody;
     resolve(body.latest);
   });

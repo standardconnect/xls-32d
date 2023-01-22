@@ -1,11 +1,11 @@
-export interface EncodeOpts {
+export interface CtiEncodeOpts {
   txn_hash: string /* hex string */;
   txn_index: string;
   ledger_hash: string /* hex string */;
   ledger_index: string;
 }
 
-export const encode = (opts: EncodeOpts) => {
+export const encode = (opts: CtiEncodeOpts) => {
   let ledger_check = BigInt(parseInt(opts.ledger_hash.slice(0, 1), 16));
   let txn_check = BigInt(parseInt(opts.txn_hash.slice(0, 1), 16));
   let cti = (ledger_check << 4n) + txn_check;

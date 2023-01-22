@@ -1,4 +1,4 @@
 import utils from './utils';
-import * as helpers from './helpers';
+import { decode, encode } from './helpers';
 
-export default { helpers, utils };
+export default { decode, encode, utils };

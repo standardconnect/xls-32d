@@ -1,3 +1,4 @@
+import { EncodeOpts } from '../helpers/encode';
 import { checkForLatestVersion } from './latestVersion';
 import { logger } from './logger';
 
@@ -6,7 +7,12 @@ const versionReg = '^v';
 const versionPrefix = '^-';
 const containsParams = '[?]';
 
-export const getVersion = async (uri: string): Promise<string | void> => {
+export interface AddedEncodeOpts {
+  protocol: string;
+  version: string;
+}
+
+export const getVersion = async (uri: string): Promise<string> => {
   const scheme = getScheme(uri);
   const reg = new RegExp(versionReg);
   const versionCheck = new RegExp(versionPrefix);
@@ -23,6 +29,7 @@ export const getVersion = async (uri: string): Promise<string | void> => {
   if (!versionFull && currentVersion) return currentVersion;
   if (!versionFull)
     throw 'Syntax Error: Something went wrong while parsing in the verison of the URI';
+
   if (!reg.test(versionFull))
     throw 'Syntax Error: version detected but it is not in the right format. See xls-32d for more information';
 
@@ -35,9 +42,19 @@ export const getVersion = async (uri: string): Promise<string | void> => {
   return version;
 };
 
-export const getScheme = (uri: string) => {
+export const getScheme = (uri: string): string => {
   checkIsValidSchema;
-  return uri.split(':')[0];
+  let scheme = uri.split(':')[0];
+  if (!scheme) throw 'Could not finde scheme for this URI';
+  return scheme;
+};
+
+export const getProtocol = (uri: string): string => {
+  checkIsValidSchema;
+  let scheme = getScheme(uri);
+  let protocol = scheme.split('-')[0];
+  if (!protocol) throw 'Could not determine protocol for this URI';
+  return protocol;
 };
 
 export const isXrplUri = (uri: string) => {
@@ -45,21 +62,28 @@ export const isXrplUri = (uri: string) => {
   return reg.test(uri);
 };
 
-export const isValidSchema = (uri: string) => {
+export const isValidSchema = (_uri: string) => {
   checkIsValidSchema;
   return true;
 };
 
-export const checkIsValidSchema = (uri: string) => {
+export const checkIsValidSchema = (_uri: string) => {
   if (!isXrplUri) throw 'This is not a valid xrpl uri';
   if (!getType) throw 'URI Type not found';
 };
 
-export const getType = (uri: string) => {
+export const getType = (uri: string): string => {
   if (!/:/.exec(uri))
     throw 'Syntax Error: No type idenitier detected. See xls-32d for more information';
 
-  return uri.split(':')[1].split('?')[0] || undefined;
+  let split = uri.split(':')[1];
+  if (!split) throw 'Syntax Error: No type idenitier detected. See xls-32d for more information';
+
+  let type = split.split('?')[0];
+
+  if (!type) throw 'Syntax Error: No type idenitier detected. See xls-32d for more information';
+
+  return type;
 };
 
 export const getParams = (uri: string) => {
@@ -71,7 +95,12 @@ export const getParams = (uri: string) => {
   }
 
   const params = uri.split('?')[1];
-  const paramsMap = params.split('=');
+
+  if (!params) return undefined;
+
+  const delimitor = params.split('&');
+  const delimitorMap = delimitor.map((param) => param.split('='));
+  const paramsMap = delimitorMap.flat();
   //logger.info(paramsMap);
   let keys = paramsMap.filter((_param: string, index: number) => {
     return index % 2 === 0;
@@ -86,8 +115,21 @@ export const getParams = (uri: string) => {
   return Object.fromEntries(keys.map((_, i) => [keys[i], values[i]]));
 };
 
-export const isValidParams = (uri: string) => {
+export const isValidParams = (_uri: string) => {
   checkIsValidSchema;
+};
+
+export type ExtendedEcodingOpts = EncodeOpts & AddedEncodeOpts;
+
+export const convertToUri = (opts: ExtendedEcodingOpts): string => {
+  let string = '';
+  Object.entries(opts.params).map((entry, index) => {
+    string += String(entry[0]);
+    string += '=' + String(entry[1]);
+    if (index + 1 !== Object.entries(opts.params).length) string += '&';
+  });
+
+  return opts.protocol + '-v' + opts.version + ':' + opts.type + '?' + string;
 };
 
 export default {
@@ -98,4 +140,6 @@ export default {
   getParams,
   getType,
   isValidParams,
+  getProtocol,
+  convertToUri,
 };

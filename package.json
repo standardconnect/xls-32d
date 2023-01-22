@@ -2,7 +2,7 @@
   "name": "xls-32d",
   "version": "0.0.1-beta",
   "description": "XRPLF Standards Proposal - Request URI Structure",
-  "main": "./dist/index.js",
+  "main": "./dist/src/index.js",
   "repository": "https://github.com/standardconnect/xls-32d.git",
   "author": "interc0der <intercoder@whirled.io>",
   "license": "MIT",
@@ -12,9 +12,9 @@
     "Standard",
     "typescript"
   ],
-  "exports": "./dist/index.js",
+  "exports": "./dist/src/index.js",
   "bin": {
-    "xls-32d": "./dist/index.js"
+    "xls-32d": "./dist/src/index.js"
   },
   "engines": {
     "node": ">=14.16"
@@ -30,11 +30,11 @@
     "lint": "eslint src --report-unused-disable-directives",
     "format": "prettier --write --plugin-search-dir=. **/*.{cjs,mjs,ts,tsx,md,json} --ignore-path ../.gitignore",
     "format:check": "prettier --check --plugin-search-dir=. **/*.{cjs,mjs,ts,tsx,md,json} --ignore-path ../.gitignore",
-    "test": "npm run c && jest -all",
+    "test": "yarn c && jest -all",
     "release": "changeset version",
-    "pub:beta": "pnpm build && npm publish --tag beta",
-    "pub:next": "pnpm build && npm publish --tag next",
-    "pub:release": "pnpm build && npm publish"
+    "pub:beta": "npm run c && npm publish --tag beta",
+    "pub:next": "npm run c && npm publish --tag next",
+    "pub:release": "npm run c && npm publish"
   },
   "devDependencies": {
     "@types/fs-extra": "^11.0.1",
