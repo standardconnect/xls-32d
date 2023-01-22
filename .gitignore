@@ -1,0 +1,15 @@
+# Ignore haters
+haters
+
+# Ignore build folder
+build
+dist
+
+# Ignore node modules
+node_modules
+
+# Ignore package locks
+*.lock
+
+# Ignore environment variables
+*.env
