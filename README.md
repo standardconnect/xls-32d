@@ -22,12 +22,14 @@ The purpose of this standard is to create a universal URI schema for links and Q
 
 <p align="center">
   Get started with testing XLS-32d by running... 
-  <p>
+  <p align="center">
   <code>npm install xls-32d@latest</code>
   </p>
 
+<p align="center">
 or
+  </p>
 
-  <p> <code>yarn add xls-32d@latest</code>
+  <p align="center"> <code>yarn add xls-32d@latest</code>
 </p>
   </p>
