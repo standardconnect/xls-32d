@@ -21,6 +21,13 @@ See the published proposal
 The purpose of this standard is to create a universal URI schema for links and QR codes that are commonly used in making payments today. Large inspiration is taken from the URI schema standards from Bitcoin BIP-0021 and Ethereum EIP 681.
 
 <p align="center">
-  Get started with testing XLS-32d by running <code>npm install xls-32d@latest</code>
-or <code>yarn add xls-32d@latest</code>
+  Get started with testing XLS-32d by running... 
+  <p>
+  <code>npm install xls-32d@latest</code>
+  </p>
+
+or
+
+  <p> <code>yarn add xls-32d@latest</code>
 </p>
+  </p>
