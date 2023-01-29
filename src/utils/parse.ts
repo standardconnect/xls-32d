@@ -1,19 +1,13 @@
-import { EncodeOpts } from '../helpers/encode';
 import { checkForLatestVersion } from './latestVersion';
 import { logger } from './logger';
 import { error } from './error';
 import schemas from '../schemas';
 import { ZodSchema } from 'zod';
-import { availableTypes } from '../../types/types';
+import { availableTypes, ExtendedEcodingOpts } from '../../types/types';
 
 const versionReg = '^v';
 const versionPrefix = '^-';
 const containsParams = '[?]';
-
-export interface AddedEncodeOpts {
-  protocol: string;
-  version: string;
-}
 
 export const getVersion = async (uri: string): Promise<string> => {
   const scheme = getScheme(uri);
@@ -98,8 +92,6 @@ export const getParams = (uri: string) => {
 
   return Object.fromEntries(keys.map((_, i) => [keys[i], values[i]]));
 };
-
-export type ExtendedEcodingOpts = EncodeOpts & AddedEncodeOpts;
 
 export const convertToUri = (opts: ExtendedEcodingOpts): string => {
   // check if type is a valid

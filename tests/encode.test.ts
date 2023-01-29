@@ -1,28 +1,29 @@
 import * as constants from './constants';
 import xls32d from '../dist/src/index';
+import * as input from './constants/input';
 
 describe('encode', () => {
-  test('account', async () => {
-    expect(await xls32d.encode(constants.decodedAccount)).toBe(constants.accountSampleBeta);
+  test('account', () => {
+    expect(xls32d.encode(input.Account)).toBe(constants.accountSampleBeta);
   });
 
-  test('payload', async () => {
-    expect(await xls32d.encode(constants.decodedPayload)).toBe(constants.payloadSampleBeta);
+  test('payload', () => {
+    expect(xls32d.encode(input.Payload)).toBe(constants.payloadSampleBeta);
   });
 
-  test('ledger', async () => {
-    expect(await xls32d.encode(constants.decodedLedger)).toBe(constants.lgrSampleBeta);
+  test('ledger', () => {
+    expect(xls32d.encode(input.Ledger)).toBe(constants.lgrSampleBeta);
   });
 
-  test('offline', async () => {
-    expect(await xls32d.encode(constants.decodedOffline)).toBe(constants.offlineSampleBeta);
+  test('offline', () => {
+    expect(xls32d.encode(input.Offline)).toBe(constants.offlineSampleBeta);
   });
 
-  test('transaction', async () => {
-    expect(await xls32d.encode(constants.decodedTx)).toBe(constants.txSampleBeta);
+  test('transaction', () => {
+    expect(xls32d.encode(input.Tx)).toBe(constants.txSampleBeta);
   });
 
-  test('version', async () => {
-    expect(await xls32d.encode(constants.decodedVersion)).toBe(constants.versionSampleBeta);
+  test('version', () => {
+    expect(xls32d.encode(input.Version)).toBe(constants.versionSampleBeta);
   });
 });
