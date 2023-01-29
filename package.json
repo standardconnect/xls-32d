@@ -1,6 +1,6 @@
 {
   "name": "xls-32d",
-  "version": "0.0.1-beta",
+  "version": "0.0.2-beta",
   "description": "XRPLF Standards Proposal - Request URI Structure",
   "main": "./dist/src/index.js",
   "repository": "https://github.com/standardconnect/xls-32d.git",
