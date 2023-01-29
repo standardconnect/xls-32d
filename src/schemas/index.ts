@@ -1,8 +1,8 @@
-import { string, object, number, ZodSchema } from 'zod';
+import { string, object, ZodSchema } from 'zod';
 
 export const account: ZodSchema = object({
   address: string(),
-  tag: number().optional(),
+  tag: string().optional(),
 });
 
 export const accountX: ZodSchema = object({
@@ -10,7 +10,7 @@ export const accountX: ZodSchema = object({
 });
 
 export const ledger: ZodSchema = object({
-  seq: number(),
+  seq: string(),
 });
 
 export const tx: ZodSchema = object({
