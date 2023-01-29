@@ -1,4 +1,5 @@
 import utils from '../utils';
+import { isValidSchema } from '../utils/checks';
 
 export interface DecodeObj {
   protocol: string;
@@ -9,6 +10,7 @@ export interface DecodeObj {
 
 export const decode = async (uri: string): Promise<DecodeObj> => {
   try {
+    isValidSchema;
     return {
       protocol: utils.parse.getProtocol(uri),
       version: await utils.parse.getVersion(uri),

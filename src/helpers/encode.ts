@@ -1,9 +1,10 @@
+import { Types } from '../../types';
 import utils from '../utils';
 import { getVersion } from '../utils/getVersion';
 import { ExtendedEcodingOpts } from '../utils/parse';
 
 export interface EncodeOpts {
-  type: string;
+  type: Types;
   params: any;
 }
 

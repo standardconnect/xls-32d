@@ -15,11 +15,11 @@ describe('utils', () => {
   });
 
   test('xrpl uri', async () => {
-    expect(xls32d.utils.parse.isXrplUri(constants.payloadSample)).toBe(true);
+    expect(xls32d.utils.checks.isXrplUri(constants.payloadSample)).toBe(true);
   });
 
   test('bad uri', async () => {
-    expect(xls32d.utils.parse.isXrplUri(constants.randomSample)).toBe(false);
+    expect(xls32d.utils.checks.isXrplUri(constants.randomSample)).toBe(false);
   });
 
   test('getParams', async () => {
@@ -35,6 +35,8 @@ describe('utils', () => {
   test('getTypeUnknown', async () => {
     expect(() => {
       expect(xls32d.utils.parse.getType(constants.typeUnknown));
-    }).toThrow('Syntax Error: No type idenitier detected. See xls-32d for more information');
+    }).toThrow(
+      'TYPE ERROR : No type idenitier detected; For more information, see XLS-32d Standards Proposal at https://github.com/XRPLF/XRPL-Standards/discussions/81'
+    );
   });
 });

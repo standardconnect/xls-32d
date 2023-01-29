@@ -1,1 +1,1 @@
-export default {};
+export { availableTypes, Types } from './types';
