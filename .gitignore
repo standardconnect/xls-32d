@@ -13,3 +13,6 @@ node_modules
 
 # Ignore environment variables
 *.env
+
+# Ignore test outputs
+tests/output/*
