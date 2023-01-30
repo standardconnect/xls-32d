@@ -1,16 +1,13 @@
-import { EncodeOpts } from '../helpers/encode';
 import { checkForLatestVersion } from './latestVersion';
 import { logger } from './logger';
+import { error } from './error';
+import schemas from '../schemas';
+import { ZodSchema } from 'zod';
+import { availableTypes, ExtendedEcodingOpts } from '../../types/types';
 
-const schemeReg = '^xrpl';
 const versionReg = '^v';
 const versionPrefix = '^-';
 const containsParams = '[?]';
-
-export interface AddedEncodeOpts {
-  protocol: string;
-  version: string;
-}
 
 export const getVersion = async (uri: string): Promise<string> => {
   const scheme = getScheme(uri);
@@ -43,55 +40,36 @@ export const getVersion = async (uri: string): Promise<string> => {
 };
 
 export const getScheme = (uri: string): string => {
-  checkIsValidSchema;
   let scheme = uri.split(':')[0];
-  if (!scheme) throw 'Could not finde scheme for this URI';
+  if (!scheme) return error.throw('Could not find scheme for this uri');
   return scheme;
 };
 
 export const getProtocol = (uri: string): string => {
-  checkIsValidSchema;
   let scheme = getScheme(uri);
   let protocol = scheme.split('-')[0];
-  if (!protocol) throw 'Could not determine protocol for this URI';
+  if (!protocol) return error.throw('Could not determine protocol for this uri');
   return protocol;
 };
 
-export const isXrplUri = (uri: string) => {
-  const reg = new RegExp(schemeReg);
-  return reg.test(uri);
-};
-
-export const isValidSchema = (_uri: string) => {
-  checkIsValidSchema;
-  return true;
-};
-
-export const checkIsValidSchema = (_uri: string) => {
-  if (!isXrplUri) throw 'This is not a valid xrpl uri';
-  if (!getType) throw 'URI Type not found';
-};
-
 export const getType = (uri: string): string => {
-  if (!/:/.exec(uri))
-    throw 'Syntax Error: No type idenitier detected. See xls-32d for more information';
+  try {
+    if (!/:/.exec(uri)) throw '';
 
-  let split = uri.split(':')[1];
-  if (!split) throw 'Syntax Error: No type idenitier detected. See xls-32d for more information';
+    let type = uri.split(':')[1]?.split('?')[0];
+    if (!type) throw '';
 
-  let type = split.split('?')[0];
-
-  if (!type) throw 'Syntax Error: No type idenitier detected. See xls-32d for more information';
-
-  return type;
+    return type;
+  } catch (_e: any) {
+    return error.throw('No type idenitier detected');
+  }
 };
 
 export const getParams = (uri: string) => {
-  checkIsValidSchema;
   const reg = new RegExp(containsParams);
   const hasParams = reg.test(uri);
   if (!hasParams) {
-    logger.warn('No params found on this URI');
+    logger.warn('No params found on this uri');
   }
 
   const params = uri.split('?')[1];
@@ -110,18 +88,20 @@ export const getParams = (uri: string) => {
   });
 
   if (keys.length !== values.length)
-    throw 'Error: There was a mistmatch of params for this URI. Check syntax formatting in xls-32d';
+    error.throw('There was a mistmatch of params. Check syntax formatting.');
 
   return Object.fromEntries(keys.map((_, i) => [keys[i], values[i]]));
 };
 
-export const isValidParams = (_uri: string) => {
-  checkIsValidSchema;
-};
-
-export type ExtendedEcodingOpts = EncodeOpts & AddedEncodeOpts;
-
 export const convertToUri = (opts: ExtendedEcodingOpts): string => {
+  // check if type is a valid
+  if (!availableTypes.includes(opts.type)) return error.throw('type is not valid');
+
+  let schema: ZodSchema = schemas[opts.type];
+  let zodCheck = schema.safeParse(opts.params);
+  if (!zodCheck.success)
+    return error.throw(`Params input schema could not be validated ${zodCheck.error}`);
+
   let string = '';
   Object.entries(opts.params).map((entry, index) => {
     string += String(entry[0]);
@@ -135,11 +115,8 @@ export const convertToUri = (opts: ExtendedEcodingOpts): string => {
 export default {
   getVersion,
   getScheme,
-  isXrplUri,
-  isValidSchema,
   getParams,
   getType,
-  isValidParams,
   getProtocol,
   convertToUri,
 };

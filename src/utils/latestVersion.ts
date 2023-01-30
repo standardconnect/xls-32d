@@ -1,4 +1,4 @@
-//import https from 'https';
+import https from 'https';
 import { getVersion } from './getVersion';
 import { logger } from './logger';
 
@@ -7,11 +7,7 @@ type DistTagsBody = {
 };
 
 export const checkForLatestVersion = (): Promise<string> => {
-  return new Promise((resolve, _reject) => {
-    let body = { latest: '0.0.1' } as DistTagsBody;
-    resolve(body.latest);
-  });
-  /*   return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     https
       .get('https://registry.npmjs.org/-/package/xls-32d/dist-tags', (res) => {
         if (res.statusCode === 200) {
@@ -28,7 +24,7 @@ export const checkForLatestVersion = (): Promise<string> => {
         // logger.error("Unable to check for latest version.");
         reject();
       });
-  }); */
+  });
 };
 
 export const renderVersionWarning = (npmVersion: string) => {

@@ -1,5 +1,6 @@
 import * as constants from './constants';
 import xls32d from '../dist/src/index';
+import { utils } from '../dist/src/index';
 
 describe('utils', () => {
   test('scheme', () => {
@@ -11,15 +12,15 @@ describe('utils', () => {
   });
 
   test('default version', async () => {
-    expect(await xls32d.utils.parse.getVersion(constants.payloadSample)).toBe('0.0.1');
+    expect(await xls32d.utils.parse.getVersion(constants.payloadSample)).toBe('0.0.1-beta');
   });
 
   test('xrpl uri', async () => {
-    expect(xls32d.utils.parse.isXrplUri(constants.payloadSample)).toBe(true);
+    expect(xls32d.utils.checks.isXrplUri(constants.payloadSample)).toBe(true);
   });
 
   test('bad uri', async () => {
-    expect(xls32d.utils.parse.isXrplUri(constants.randomSample)).toBe(false);
+    expect(xls32d.utils.checks.isXrplUri(constants.randomSample)).toBe(false);
   });
 
   test('getParams', async () => {
@@ -35,6 +36,8 @@ describe('utils', () => {
   test('getTypeUnknown', async () => {
     expect(() => {
       expect(xls32d.utils.parse.getType(constants.typeUnknown));
-    }).toThrow('Syntax Error: No type idenitier detected. See xls-32d for more information');
+    }).toThrow(
+      'TYPE ERROR : No type idenitier detected; For more information, see XLS-32d Standards Proposal at https://github.com/XRPLF/XRPL-Standards/discussions/81'
+    );
   });
 });

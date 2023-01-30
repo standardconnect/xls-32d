@@ -1,19 +1,13 @@
+import { EncodeOpts, ExtendedEcodingOpts } from '../../types/types';
 import utils from '../utils';
 import { getVersion } from '../utils/getVersion';
-import { ExtendedEcodingOpts } from '../utils/parse';
 
-export interface EncodeOpts {
-  type: string;
-  params: any;
-}
-
-export const encode = async (opts: EncodeOpts): Promise<string> => {
+export const encode = (opts: EncodeOpts): string => {
   try {
     let object: ExtendedEcodingOpts = {
       protocol: 'xrpl',
       version: getVersion(),
-      type: opts.type,
-      params: opts.params,
+      ...opts,
     };
 
     return utils.parse.convertToUri(object);
