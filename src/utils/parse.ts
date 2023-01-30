@@ -3,7 +3,7 @@ import { logger } from './logger';
 import { error } from './error';
 import schemas from '../schemas';
 import { ZodSchema } from 'zod';
-import { availableTypes, ExtendedEcodingOpts } from '../../types/types';
+import { availableTypes, ExtendedEcodingOpts } from '../../types/index';
 
 const versionReg = '^v';
 const versionPrefix = '^-';

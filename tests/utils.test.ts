@@ -1,6 +1,5 @@
 import * as constants from './constants';
 import xls32d from '../dist/src/index';
-import { utils } from '../dist/src/index';
 
 describe('utils', () => {
   test('scheme', () => {
