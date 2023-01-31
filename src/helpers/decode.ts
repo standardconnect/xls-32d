@@ -1,5 +1,5 @@
-import { DecodeObj } from '../../types';
-import utils from '../utils/index';
+import { DecodeObj } from 'types/index';
+import utils from 'utils/index';
 
 export const decode = async (uri: string): Promise<DecodeObj> => {
   return {

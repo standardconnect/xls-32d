@@ -1,4 +1,4 @@
-import { EncodeOpts } from '../../types';
+import { EncodeOpts } from 'types/index';
 import x from './procedure';
 
 export const encode = (opts: EncodeOpts) => new x().encode(opts);

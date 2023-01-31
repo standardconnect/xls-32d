@@ -1,4 +1,4 @@
-import { availableTypes } from '../../types';
+import { availableTypes } from 'types/index';
 import { error } from './error';
 
 const schemeReg = '^xrpl';

@@ -112,9 +112,9 @@
     "preserveSymlinks": true,
 
     "paths": {
-      "@@types/*": ["types/*"],
-      "@utils/*": ["src/utils/*"],
-      "@helpers/*": ["src/helpers/*"]
+      "types/*": ["types/*"],
+      "utils/*": ["src/utils/*"],
+      "helpers/*": ["src/helpers/*"]
     }
   },
   "include": ["src/**/*.ts", "types/**/*.ts"],
