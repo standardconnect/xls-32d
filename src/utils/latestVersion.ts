@@ -34,15 +34,10 @@ export const renderVersionWarning = (npmVersion: string) => {
   //   console.log("npm", npmVersion);
 
   if (currentVersion.includes('beta')) {
-    logger.warn('  You are using a beta version of create-xumm-app.');
+    logger.warn('  You are using a beta version.');
     logger.warn('  Please report any bugs you encounter.');
-  } else if (currentVersion.includes('next')) {
-    logger.warn(
-      '  You are running create-xumm-app with the @next tag which is no longer maintained.'
-    );
-    logger.warn('  Please run the CLI with @latest instead.');
   } else if (currentVersion !== npmVersion) {
-    logger.warn('  You are using an outdated version of create-xumm-app.');
+    logger.warn('  You are using an outdated version.');
     logger.warn(
       '  Your version:',
       currentVersion + '.',

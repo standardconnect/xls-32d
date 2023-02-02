@@ -1,4 +1,4 @@
-import { string, object, ZodSchema } from 'zod';
+import { string, number, object, ZodSchema } from 'zod';
 
 export const account: ZodSchema = object({
   address: string(),
@@ -34,8 +34,18 @@ export const nftoken: ZodSchema = object({
   id: string(),
 });
 
+export const cti: ZodSchema = object({
+  type: string().optional(),
+  networkId: number(),
+  txn_hash: string(),
+  txn_index: string(),
+  ledger_hash: string(),
+  ledger_index: string(),
+});
+
 export default {
   account,
+  cti,
   accountX,
   nftoken,
   offline,

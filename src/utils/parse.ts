@@ -3,7 +3,8 @@ import { logger } from './logger';
 import { error } from './error';
 import schemas from '../schemas';
 import { ZodSchema } from 'zod';
-import { availableTypes, ExtendedEcodingOpts } from '../../types/types';
+import { availableTypes, ExtendedEcodingOpts } from 'types/index';
+import cti from '../cti';
 
 const versionReg = '^v';
 const versionPrefix = '^-';
@@ -90,10 +91,21 @@ export const getParams = (uri: string) => {
   if (keys.length !== values.length)
     error.throw('There was a mistmatch of params. Check syntax formatting.');
 
+  if (getType(uri) === 'cti') {
+    let obj = Object.fromEntries(keys.map((_, i) => [keys[i], values[i]]));
+    const { networkId, ledger_index, txn_index } = new cti.Decode(obj.id);
+
+    return Object.assign(obj, {
+      networkId: networkId,
+      ledger_index: ledger_index,
+      txn_index: txn_index,
+    });
+  }
+
   return Object.fromEntries(keys.map((_, i) => [keys[i], values[i]]));
 };
 
-export const convertToUri = (opts: ExtendedEcodingOpts): string => {
+export function convertToUri(opts: ExtendedEcodingOpts): string {
   // check if type is a valid
   if (!availableTypes.includes(opts.type)) return error.throw('type is not valid');
 
@@ -101,6 +113,17 @@ export const convertToUri = (opts: ExtendedEcodingOpts): string => {
   let zodCheck = schema.safeParse(opts.params);
   if (!zodCheck.success)
     return error.throw(`Params input schema could not be validated ${zodCheck.error}`);
+
+  if (opts.type === 'cti' && 'txn_index' in opts.params)
+    return (
+      opts.protocol +
+      '-v' +
+      opts.version +
+      ':' +
+      opts.type +
+      '?id=' +
+      new cti.Encode(opts.params).cti
+    );
 
   let string = '';
   Object.entries(opts.params).map((entry, index) => {
@@ -110,7 +133,7 @@ export const convertToUri = (opts: ExtendedEcodingOpts): string => {
   });
 
   return opts.protocol + '-v' + opts.version + ':' + opts.type + '?' + string;
-};
+}
 
 export default {
   getVersion,

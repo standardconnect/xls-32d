@@ -2,6 +2,8 @@
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */
 
+    "baseUrl": ".",
+
     /* Projects */
     // "incremental": true,                              /* Save .tsbuildinfo files to allow for incremental compilation of projects. */
     "composite": true /* Enable constraints that allow a TypeScript project to be used with project references. */,
@@ -107,8 +109,14 @@
     "removeComments": true,
     "preserveConstEnums": false,
     "suppressImplicitAnyIndexErrors": false,
-    "preserveSymlinks": true
+    "preserveSymlinks": true,
+
+    "paths": {
+      "types/*": ["types/*"],
+      "utils/*": ["src/utils/*"],
+      "helpers/*": ["src/helpers/*"]
+    }
   },
-  "include": ["src/**/*.ts", "types/**/*.ts", "src/**/*.json"],
+  "include": ["src/**/*.ts", "types/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }
