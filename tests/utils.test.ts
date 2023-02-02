@@ -7,11 +7,11 @@ describe('utils', () => {
   });
 
   test('version', async () => {
-    expect(await xls32d.utils.parse.getVersion(constants.versionSample)).toBe('0.1.3');
+    expect(await xls32d.utils.parse.getVersion(constants.randomVersionSample)).toBe('0.1.3');
   });
 
   test('default version', async () => {
-    expect(await xls32d.utils.parse.getVersion(constants.payloadSample)).toBe('0.0.1-beta');
+    expect(await xls32d.utils.parse.getVersion(constants.payloadSample)).toBe('0.0.3-beta');
   });
 
   test('xrpl uri', async () => {

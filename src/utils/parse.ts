@@ -110,20 +110,17 @@ export function convertToUri(opts: ExtendedEcodingOpts): string {
   if (!availableTypes.includes(opts.type)) return error.throw('type is not valid');
 
   let schema: ZodSchema = schemas[opts.type];
+  if (opts.params['xaddress']) schema = schemas.accountX;
+
   let zodCheck = schema.safeParse(opts.params);
   if (!zodCheck.success)
     return error.throw(`Params input schema could not be validated ${zodCheck.error}`);
 
+  let version = '';
+  if (opts.opts?.version) version = '-v' + opts.version;
+
   if (opts.type === 'cti' && 'txn_index' in opts.params)
-    return (
-      opts.protocol +
-      '-v' +
-      opts.version +
-      ':' +
-      opts.type +
-      '?id=' +
-      new cti.Encode(opts.params).cti
-    );
+    return opts.protocol + version + ':' + opts.type + '?id=' + new cti.Encode(opts.params).cti;
 
   let string = '';
   Object.entries(opts.params).map((entry, index) => {
@@ -132,7 +129,7 @@ export function convertToUri(opts: ExtendedEcodingOpts): string {
     if (index + 1 !== Object.entries(opts.params).length) string += '&';
   });
 
-  return opts.protocol + '-v' + opts.version + ':' + opts.type + '?' + string;
+  return opts.protocol + version + ':' + opts.type + '?' + string;
 }
 
 export default {

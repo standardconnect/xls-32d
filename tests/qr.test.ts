@@ -15,7 +15,6 @@ describe('qr', () => {
     let uri = await xls32d.encode(constants.decodedPayload);
     let buffer = await xls32d.utils.qr.generateQRCodeToBuffer(uri);
     fs.writeFileSync(`${dir}/buffer.json`, JSON.stringify(buffer.toJSON()));
-    console.log(buffer);
   });
 
   test('payload to file', async () => {
