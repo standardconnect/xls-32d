@@ -1,6 +1,24 @@
-export const availableTypes = ['account', 'ledger', 'tx', 'payload', 'offline', 'token', 'nftoken'];
+import { ICtiEncodeParams } from './cti';
+export const availableTypes = [
+  'account',
+  'cti',
+  'ledger',
+  'tx',
+  'payload',
+  'offline',
+  'token',
+  'nftoken',
+];
 
-export type Types = 'account' | 'ledger' | 'tx' | 'payload' | 'offline' | 'token' | 'nftoken';
+export type Types =
+  | 'account'
+  | 'cti'
+  | 'ledger'
+  | 'tx'
+  | 'payload'
+  | 'offline'
+  | 'token'
+  | 'nftoken';
 
 export interface IAccountEncodeParams {
   address: string;
@@ -84,6 +102,7 @@ export interface EncodeOpts {
   type: string;
   params:
     | IPayloadEncodeParams
+    | ICtiEncodeParams
     | ITxEncodeParams
     | IAccountEncodeParams
     | ITokenEncodeParams
@@ -91,6 +110,17 @@ export interface EncodeOpts {
     | INFTokenEncodeParams
     | IOfflineEncodeParams;
 }
+
+export type EncodeParamsTypes = [
+  IPayloadEncodeParams,
+  ICtiEncodeParams,
+  ITxEncodeParams,
+  IAccountEncodeParams,
+  ITokenEncodeParams,
+  ILedgerEncodeParams,
+  INFTokenEncodeParams,
+  IOfflineEncodeParams
+];
 
 export interface AddedEncodeOpts {
   protocol: string;

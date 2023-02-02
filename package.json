@@ -29,6 +29,8 @@
     "format:check": "prettier --check --plugin-search-dir=. **/*.{cjs,mjs,ts,tsx,md,json} --ignore-path ../.gitignore",
     "test": "yarn c && jest -all",
     "test:cti": "yarn c && jest -i tests/cti.test.ts -t",
+    "test:encode": "yarn c && jest -i tests/encode.test.ts -t",
+    "test:decode": "yarn c && jest -i tests/decode.test.ts -t",
     "release": "changeset version",
     "pub:beta": "npm run c && npm publish --tag beta",
     "pub:next": "npm run c && npm publish --tag next",

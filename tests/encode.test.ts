@@ -23,6 +23,10 @@ describe('encode', () => {
     expect(xls32d.encode(input.Tx)).toBe(constants.txSampleBeta);
   });
 
+  test('cti', () => {
+    expect(xls32d.encode(input.Cti)).toBe(constants.ctiSampleBeta);
+  });
+
   test('version', () => {
     expect(xls32d.encode(input.Version)).toBe(constants.versionSampleBeta);
   });

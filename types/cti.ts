@@ -1,11 +1,4 @@
-export interface CtiSimpleEncodeOpts {
-  txn_hash: string /* hex string */;
-  txn_index: string;
-  ledger_hash: string /* hex string */;
-  ledger_index: string;
-}
-
-export interface CtiAdvancedEncodeOpts {
+export interface ICtiEncodeParams {
   type?: string;
   networkId: number;
   txn_hash: string;

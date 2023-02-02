@@ -1,84 +1,188 @@
-import { CtiAdvancedEncodeOpts /* CtiSimpleEncodeOpts */ } from 'types/cti';
-import { BytesList } from './buffers';
+import { ICtiEncodeParams } from 'types/cti';
+import { BytesList, UintArray } from './buffers';
 import { definitions } from './def';
 
-/* const advanced = {
-  encode: (opts: CtiAdvancedEncodeOpts) => {
-    let ledger_check = BigInt(parseInt(opts.ledger_hash.slice(0, 1), 16));
-    let txn_check = BigInt(parseInt(opts.txn_hash.slice(0, 1), 16));
-    let txnBin = Number(opts.txn_index).toString(2);
-    let lgrBin = Number(opts.ledger_index).toString(2);
+export class Encode {
+  private sink: BytesList = new BytesList();
+  public type: string;
+  public def: any;
+  public T: bigint = 0n;
+  public L: bigint = 0n;
+  private bits: number[] = [];
 
-    let padding = BigInt('00'); // Will be dropped from BigInt, placeholder
-    let T = BigInt(txnBin.length < 16 ? 0 : 1);
-    let L = BigInt(lgrBin.length < 32 ? 0 : 1);
+  public cti: string | undefined;
+  public hex: string | undefined;
+  public bin: string | undefined;
+  public uri: string = '';
+  public bigInt: bigint = 0n;
+  public bytes: Buffer | undefined;
 
-    let cti = (padding << 1n) + T;
-    cti <<= 1n;
-    cti += L;
-    cti <<= 4n;
-    cti += BigInt(opts.networkId);
-    cti <<= 4n;
-    cti += ledger_check;
-    cti <<= 4n;
-    cti += txn_check;
-    cti <<= T === 1n ? 32n : 16n;
-    cti += BigInt(opts.txn_index);
-    cti <<= L === 1n ? 64n : 32n;
-    cti += BigInt(opts.ledger_index);
-    return cti;
-  },
-}; */
-
-export default class Handler {
-  sink: BytesList = new BytesList();
-  type: string;
-
-  constructor(opts: CtiAdvancedEncodeOpts) {
+  constructor(opts: ICtiEncodeParams) {
     this.type = opts.type || 'mod';
+    this.def = definitions[this.type];
+    this.handleBits();
     this.bytelist(opts);
+    this.encode(opts);
+
+    if (this.type === 'advanced')
+      this.T = BigInt(Number(opts.txn_index).toString(2).length <= 16 ? 0 : 1);
+    if (this.type === 'advanced')
+      this.L = BigInt(Number(opts.ledger_index).toString(2).length <= 32 ? 0 : 1);
   }
 
-  private bytelist = (opts: CtiAdvancedEncodeOpts) => {
-    let def = definitions[this.type];
-    Object.keys(def)
-      .sort((a, b) => def[a].nth - def[b].nth)
-      .map((key) => {
+  private bytelist = (opts: ICtiEncodeParams) => {
+    Object.keys(this.def)
+      .sort((a, b) => this.def[a].nth - this.def[b].nth)
+      .map((key, i) => {
+        let bits = this.def[key].bits;
+        if (this.bits[i]) bits = this.bits[i];
+
+        let buffer = new UintArray(bits);
+
+        if (key === 'control') {
+          buffer.make(Number(this.T));
+          buffer.make(Number(this.L));
+          if (buffer.bytesArray[0]) this.write(buffer.bytesArray[0]);
+          return;
+        }
+
         let value = Number(opts[key]);
-        if (this.type === 'simple' && def[key].checksum)
-          value = parseInt(opts[key].slice(0, 1), 16);
-        def[key].array.write(value);
-        def[key].array.make();
-        this.write(def[key].array.bytesArray[0]);
+        if (this.def[key].checksum) value = parseInt(opts[key].slice(0, 1), 16);
+        buffer.make(value);
+        if (buffer.bytesArray[0]) this.write(buffer.bytesArray[0]);
       });
+    this.bytes = this.sink.toBytes();
   };
 
   private write = (bytes: Buffer): void => {
     this.sink.put(new Uint8Array(bytes).buffer);
   };
 
+  public isSimple = (cti: bigint): boolean => {
+    return Number(cti >> 56n) === 0;
+  };
+
+  public get = (key: string): number | undefined => {
+    if (!Object.keys(this.def).includes(key)) return undefined;
+
+    let offset = 0;
+    let sort = Object.keys(this.def).sort((a, b) => this.def[b].nth - this.def[a].nth);
+
+    for (const _key of sort) {
+      if (_key === key) break;
+      offset += this.def[_key].bits;
+    }
+    return Number((this.bigInt >> BigInt(offset)) & this.def[key].getValue);
+  };
+
+  private handleBits = () => {
+    Object.keys(this.def)
+      .sort((a, b) => this.def[a].nth - this.def[b].nth)
+      .map((key) => {
+        if (key === 'ledger_index')
+          return this.bits.push(
+            this.type === 'advanced' && this.L === 1n ? 64 : this.def.ledger_index.bits
+          );
+        if (key === 'txn_index')
+          return this.bits.push(
+            this.type === 'advanced' && this.T === 1n ? 32 : this.def.txn_index.bits
+          );
+        return this.bits.push(this.def[key].bits);
+      });
+  };
+
+  public encode = (opts: ICtiEncodeParams) => {
+    Object.keys(this.def)
+      .sort((a, b) => this.def[a].nth - this.def[b].nth)
+      .map((key, index) => {
+        let value = 0n;
+
+        if (key === 'control') {
+          this.bigInt = (this.bigInt << BigInt(this.def[key].bits)) + this.T;
+          return (this.bigInt = (this.bigInt << BigInt(this.def[key].bits)) + this.L);
+        }
+
+        if (this.def[key].checksum) value = BigInt(parseInt(opts[key].slice(0, 1), 16));
+        if (!this.def[key].checksum) value = BigInt(opts[key]);
+
+        let bits = this.bits[index];
+        if (bits) return (this.bigInt = (this.bigInt << BigInt(bits)) + BigInt(value));
+        return (this.bigInt = (this.bigInt << BigInt(this.def[key].bits)) + BigInt(value));
+      });
+
+    this.hex = '0x' + this.bigInt.toString(16).toUpperCase();
+    this.bin = this.bigInt.toString(2);
+    this.cti = this.bigInt.toString();
+    this.uri = 'cti:' + this.cti;
+  };
+
   public convert = this.sink;
+}
+
+export class Decode {
+  public def: any;
+  public T: bigint = 0n;
+  public L: bigint = 0n;
+
+  public cti: string | undefined;
+  public hex: string | undefined;
+  public bin: string | undefined;
+  public uri: string = '';
+  public bigInt: bigint = 0n;
+  public bytes: Buffer | undefined;
+  public networkId: number | undefined;
+  public ledger_index: number | undefined;
+  public txn_index: number | undefined;
+
+  constructor(cti: string) {
+    this.cti = cti;
+    this.def = definitions['mod'];
+    this.bigInt = BigInt(this.cti);
+    this.hex = '0x' + this.bigInt.toString(16).toUpperCase();
+    this.bin = this.bigInt.toString(2);
+    this.cti = this.bigInt.toString();
+    this.uri = 'cti:' + this.cti;
+    this.getNetworkId();
+    this.getLedger();
+    this.getTx();
+  }
 
   public isSimple = (cti: bigint): boolean => {
     return Number(cti >> 56n) === 0;
   };
 
-  public get = (key: string): number => {
+  private getNetworkId = (): void => {
     let offset = 0;
-    let def = definitions[this.type];
-    let sort = Object.keys(def).sort((a, b) => def[b].nth - def[a].nth);
-    for (const i in sort) {
-      if (sort[i] === key) break;
-      offset += def[sort[i]].bits;
+    let sort = Object.keys(this.def).sort((a, b) => this.def[b].nth - this.def[a].nth);
+
+    for (const _key of sort) {
+      if (_key === 'networkId') break;
+      offset += this.def[_key].bits;
     }
-    let big = this.sink.toBigInt();
-    return Number((big >> BigInt(offset)) & def[key].getValue);
+    this.networkId = Number((this.bigInt >> BigInt(offset)) & this.def.networkId.getValue);
+  };
+
+  private getLedger = (): void => {
+    let offset = 0;
+    let sort = Object.keys(this.def).sort((a, b) => this.def[b].nth - this.def[a].nth);
+
+    for (const _key of sort) {
+      if (_key === 'ledger_index') break;
+      offset += this.def[_key].bits;
+    }
+    this.ledger_index = Number((this.bigInt >> BigInt(offset)) & this.def.ledger_index.getValue);
+  };
+
+  private getTx = (): void => {
+    let offset = 0;
+    let sort = Object.keys(this.def).sort((a, b) => this.def[b].nth - this.def[a].nth);
+
+    for (const _key of sort) {
+      if (_key === 'txn_index') break;
+      offset += this.def[_key].bits;
+    }
+    this.txn_index = Number((this.bigInt >> BigInt(offset)) & this.def.txn_index.getValue);
   };
 }
 
-/* export default {
-  simple,
-  advanced,
-  isSimple,
-  Modified,
-}; */
+export default { Encode, Decode };
