@@ -8,5 +8,5 @@ export const uri = {
 
 export const url = {
   encode: (opts: URLEncodeOpts) => new URL().encode(opts),
-  decode: (url: string) => new URL().input(url).decode(url),
+  decode: (url: string) => new URL().decode(url),
 };
