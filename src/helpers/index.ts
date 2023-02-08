@@ -1,5 +1,12 @@
-import { EncodeOpts } from 'types/index';
-import x from './procedure';
+import { URIEncodeOpts, URLEncodeOpts } from 'types/index';
+import { URI, URL } from './procedure';
 
-export const encode = (opts: EncodeOpts) => new x().encode(opts);
-export const decode = (uri: string) => new x().input(uri).decode(uri);
+export const uri = {
+  encode: (opts: URIEncodeOpts) => new URI().encode(opts),
+  decode: (uri: string) => new URI().input(uri).decode(uri),
+};
+
+export const url = {
+  encode: (opts: URLEncodeOpts) => new URL().encode(opts),
+  decode: (url: string) => new URL().input(url).decode(url),
+};

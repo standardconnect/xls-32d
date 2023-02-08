@@ -116,8 +116,24 @@ export interface ExtendedEncodeOpts {
   serialize?: boolean;
 }
 
-export interface EncodeOpts {
+export interface URIEncodeOpts {
   type: string;
+  opts?: ExtendedEncodeOpts;
+  params:
+    | IPayloadEncodeParams
+    | ICtiEncodeParams
+    | ITxEncodeParams
+    | IAccountEncodeParams
+    | XAccountEncodeParams
+    | ITokenEncodeParams
+    | ILedgerEncodeParams
+    | INFTokenEncodeParams
+    | IOfflineEncodeParams;
+}
+
+export interface URLEncodeOpts {
+  type: string;
+  domain: string;
   opts?: ExtendedEncodeOpts;
   params:
     | IPayloadEncodeParams
@@ -148,4 +164,5 @@ export interface AddedEncodeOpts {
   version: string;
 }
 
-export type ExtendedEcodingOpts = EncodeOpts & AddedEncodeOpts;
+export type ExtendedURIEncodingOpts = URIEncodeOpts & AddedEncodeOpts;
+export type ExtendedURLEncodingOpts = URLEncodeOpts & AddedEncodeOpts;

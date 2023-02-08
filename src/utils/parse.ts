@@ -3,12 +3,15 @@ import { logger } from './logger';
 import { error } from './error';
 import schemas from '../schemas';
 import { ZodSchema } from 'zod';
-import { availableTypes, ExtendedEcodingOpts } from 'types/index';
+import { availableTypes, ExtendedURIEncodingOpts, ExtendedURLEncodingOpts } from 'types/index';
 import cti from '../cti';
 
 const versionReg = '^v';
 const versionPrefix = '^-';
 const containsParams = '[?]';
+
+const urlify = (s: string) => s.replace(' ', '%20');
+const deurlify = (s: string) => s.replace('%20', ' ');
 
 export const getVersion = async (uri: string): Promise<string> => {
   const scheme = getScheme(uri);
@@ -80,13 +83,18 @@ export const getParams = (uri: string) => {
   const delimitor = params.split('&');
   const delimitorMap = delimitor.map((param) => param.split('='));
   const paramsMap = delimitorMap.flat();
-  //logger.info(paramsMap);
-  let keys = paramsMap.filter((_param: string, index: number) => {
-    return index % 2 === 0;
-  });
-  let values = paramsMap.filter((_param: string, index: number) => {
-    return !(index % 2 === 0);
-  });
+
+  let keys = paramsMap
+    .filter((_param: string, index: number) => {
+      return index % 2 === 0;
+    })
+    .map((param) => deurlify(param));
+
+  let values = paramsMap
+    .filter((_param: string, index: number) => {
+      return !(index % 2 === 0);
+    })
+    .map((param) => deurlify(param));
 
   if (keys.length !== values.length)
     error.throw('There was a mistmatch of params. Check syntax formatting.');
@@ -105,7 +113,7 @@ export const getParams = (uri: string) => {
   return Object.fromEntries(keys.map((_, i) => [keys[i], values[i]]));
 };
 
-export function convertToUri(opts: ExtendedEcodingOpts): string {
+export function convertToUri(opts: ExtendedURIEncodingOpts): string {
   // check if type is a valid
   if (!availableTypes.includes(opts.type)) return error.throw('type is not valid');
 
@@ -124,12 +132,50 @@ export function convertToUri(opts: ExtendedEcodingOpts): string {
 
   let string = '';
   Object.entries(opts.params).map((entry, index) => {
-    string += String(entry[0]);
-    string += '=' + String(entry[1]);
+    string += urlify(String(entry[0]));
+    string += '=' + urlify(String(entry[1]));
     if (index + 1 !== Object.entries(opts.params).length) string += '&';
   });
 
   return opts.protocol + version + ':' + opts.type + '?' + string;
+}
+
+export function convertToUrl(opts: ExtendedURLEncodingOpts): string {
+  // check if type is a valid
+  if (!availableTypes.includes(opts.type)) return error.throw('type is not valid');
+
+  let schema: ZodSchema = schemas[opts.type];
+  if (opts.params['xaddress']) schema = schemas.accountX;
+
+  let zodCheck = schema.safeParse(opts.params);
+  if (!zodCheck.success)
+    return error.throw(`Params input schema could not be validated ${zodCheck.error}`);
+
+  let schema_string = 'schema=' + opts.protocol;
+  let type_string = '&type=' + opts.type;
+
+  let version_string = '';
+  if (opts.opts?.version) version_string = '&version=' + opts.version;
+
+  let query = schema_string + version_string + type_string;
+
+  if (opts.type === 'cti' && 'txn_index' in opts.params) {
+    let cti_string = 'id=' + new cti.Encode(opts.params).cti;
+    query = query + '&' + cti_string;
+    return opts.domain + '?' + query;
+  }
+  //opts.protocol + version_string + ':' + opts.type + '?id=' + new cti.Encode(opts.params).cti
+
+  let params_string = '';
+  Object.entries(opts.params).map((entry, index) => {
+    params_string += urlify(String(entry[0]));
+    params_string += '=' + urlify(String(entry[1]));
+    if (index + 1 !== Object.entries(opts.params).length) params_string += '&';
+  });
+
+  query = query + '&' + params_string;
+
+  return opts.domain + '?' + query;
 }
 
 export default {
@@ -139,4 +185,5 @@ export default {
   getType,
   getProtocol,
   convertToUri,
+  convertToUrl,
 };
