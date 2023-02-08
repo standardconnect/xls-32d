@@ -2,32 +2,32 @@ import * as constants from './constants';
 import xls32d from '../dist/src/index';
 import * as input from './constants/input';
 
-describe('encode', () => {
+describe('uri.encode', () => {
   test('account', () => {
-    expect(xls32d.encode(input.Account)).toBe(constants.accountSampleBeta);
+    expect(xls32d.uri.encode(input.Account)).toBe(constants.accountSample);
   });
 
   test('payload', () => {
-    expect(xls32d.encode(input.Payload)).toBe(constants.payloadSampleBeta);
+    expect(xls32d.uri.encode(input.Payload)).toBe(constants.payloadSample);
   });
 
   test('ledger', () => {
-    expect(xls32d.encode(input.Ledger)).toBe(constants.lgrSampleBeta);
+    expect(xls32d.uri.encode(input.Ledger)).toBe(constants.lgrSample);
   });
 
   test('offline', () => {
-    expect(xls32d.encode(input.Offline)).toBe(constants.offlineSampleBeta);
+    expect(xls32d.uri.encode(input.Offline)).toBe(constants.offlineSample);
   });
 
   test('transaction', () => {
-    expect(xls32d.encode(input.Tx)).toBe(constants.txSampleBeta);
+    expect(xls32d.uri.encode(input.Tx)).toBe(constants.txSample);
   });
 
   test('cti', () => {
-    expect(xls32d.encode(input.Cti)).toBe(constants.ctiSampleBeta);
+    expect(xls32d.uri.encode(input.Cti)).toBe(constants.ctiSample);
   });
 
   test('version', () => {
-    expect(xls32d.encode(input.Version)).toBe(constants.versionSampleBeta);
+    expect(xls32d.uri.encode(input.Version)).toBe(constants.versionSampleBeta);
   });
 });

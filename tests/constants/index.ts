@@ -11,9 +11,13 @@ export const accountSample = 'xrpl:account?address=rpfBYsmNBB7Y6z7qHS8g26KE3y3hH
 export const offlineSample =
   'xrpl:offline?blob=120007220008000024001ABED82A2380BF2C2019001ABED764D55920AC9391400000000000000000000000000055534400000000000A20B3C85F482532A9578DBB3950B85CA06594D165400000037E11D60068400000000000000A732103EE83BB432547885C219634A1BC407A9DB0474145D69737D09CCDC63E1DEE7FE3744630440220143759437C04F7B61F012563AFE90D8DAFC46E86035E1D965A9CED282C97D4CE02204CFD241E86F17E011298FC1A39B63386C74306A5DE047E213B0F29EFA4571C2C8114DD76483FACDEE26E60D8A586BB58D09F27045C46';
 
-export const versionSample = 'xrpl-v0.1.3:ledger?seq=7295400';
+export const ctiSample = 'xrpl:cti?id=17475295679037553836033';
 
-export const randomSample = 'xrp-v0.1.3:ledger?seq=7295400';
+export const versionSample = 'xrpl:ledger?seq=7295400';
+
+export const randomSample = 'xrp:ledger?seq=7295400';
+
+export const randomVersionSample = 'xrpl-v0.1.3:ledger?seq=7295400';
 
 export const typeUnknown = 'xrpl-v0.1.3?seq=7295400';
 
@@ -46,18 +50,6 @@ export const decodedAccount = {
   params: {
     address: 'rpfBYsmNBB7Y6z7qHS8g26KE3y3hHaTxkq',
     tag: '000001',
-  },
-};
-
-export const decodedCti = {
-  protocol: 'xrpl',
-  version: '0.0.3-beta',
-  type: 'cti',
-  params: {
-    id: '17475295679037553836033',
-    networkId: 1,
-    ledger_index: 62084722,
-    txn_index: 25,
   },
 };
 
@@ -103,6 +95,18 @@ export const decodedVersion = {
   type: 'ledger',
   params: {
     seq: '7295400',
+  },
+};
+
+export const decodedCti = {
+  protocol: 'xrpl',
+  version: '0.0.3-beta',
+  type: 'cti',
+  params: {
+    id: '17475295679037553836033',
+    networkId: 1,
+    ledger_index: 62084722,
+    txn_index: 25,
   },
 };
 

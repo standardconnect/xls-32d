@@ -3,12 +3,15 @@ import { logger } from './logger';
 import { error } from './error';
 import schemas from '../schemas';
 import { ZodSchema } from 'zod';
-import { availableTypes, ExtendedEcodingOpts } from 'types/index';
+import { availableTypes, ExtendedURIEncodingOpts, ExtendedURLEncodingOpts } from 'types/index';
 import cti from '../cti';
 
 const versionReg = '^v';
 const versionPrefix = '^-';
 const containsParams = '[?]';
+
+//const urlify = (s: string) => s.replace(' ', '%20');
+//const deurlify = (s: string) => s.replace('%20', ' ');
 
 export const getVersion = async (uri: string): Promise<string> => {
   const scheme = getScheme(uri);
@@ -74,25 +77,11 @@ export const getParams = (uri: string) => {
   }
 
   const params = uri.split('?')[1];
-
   if (!params) return undefined;
 
-  const delimitor = params.split('&');
-  const delimitorMap = delimitor.map((param) => param.split('='));
-  const paramsMap = delimitorMap.flat();
-  //logger.info(paramsMap);
-  let keys = paramsMap.filter((_param: string, index: number) => {
-    return index % 2 === 0;
-  });
-  let values = paramsMap.filter((_param: string, index: number) => {
-    return !(index % 2 === 0);
-  });
-
-  if (keys.length !== values.length)
-    error.throw('There was a mistmatch of params. Check syntax formatting.');
-
   if (getType(uri) === 'cti') {
-    let obj = Object.fromEntries(keys.map((_, i) => [keys[i], values[i]]));
+    let obj = Object.fromEntries(new URLSearchParams(params));
+    if (!obj.id) throw '';
     const { networkId, ledger_index, txn_index } = new cti.Decode(obj.id);
 
     return Object.assign(obj, {
@@ -102,37 +91,63 @@ export const getParams = (uri: string) => {
     });
   }
 
-  return Object.fromEntries(keys.map((_, i) => [keys[i], values[i]]));
+  return Object.fromEntries(new URLSearchParams(params));
 };
 
-export function convertToUri(opts: ExtendedEcodingOpts): string {
+export function convertToUri(opts: ExtendedURIEncodingOpts): string {
   // check if type is a valid
   if (!availableTypes.includes(opts.type)) return error.throw('type is not valid');
 
   let schema: ZodSchema = schemas[opts.type];
+  if (opts.params['xaddress']) schema = schemas.accountX;
+
   let zodCheck = schema.safeParse(opts.params);
   if (!zodCheck.success)
     return error.throw(`Params input schema could not be validated ${zodCheck.error}`);
 
-  if (opts.type === 'cti' && 'txn_index' in opts.params)
-    return (
-      opts.protocol +
-      '-v' +
-      opts.version +
-      ':' +
-      opts.type +
-      '?id=' +
-      new cti.Encode(opts.params).cti
+  let version = '';
+  if (opts.opts?.version) version = '-v' + opts.version;
+
+  let query = new URLSearchParams([...Object.entries(opts.params)]).toString();
+
+  if (opts.type === 'cti' && 'txn_index' in opts.params) {
+    let id = new cti.Encode(opts.params).cti;
+    if (id) query = new URLSearchParams([...Object.entries({ id: id })]).toString();
+  }
+
+  return opts.protocol + version + ':' + opts.type + '?' + query;
+}
+
+export function convertToUrl(opts: ExtendedURLEncodingOpts): string {
+  if (!availableTypes.includes(opts.type)) return error.throw('type is not valid');
+
+  let schema: ZodSchema = schemas[opts.type];
+  if (opts.params['xaddress']) schema = schemas.accountX;
+
+  let zodCheck = schema.safeParse(opts.params);
+  if (!zodCheck.success)
+    return error.throw(`Params input schema could not be validated ${zodCheck.error}`);
+
+  let params = Object.assign(
+    { schema: opts.protocol },
+    { type: opts.type },
+    opts.opts?.version && { version: opts.version },
+    opts.params
+  );
+
+  let query = new URLSearchParams([...Object.entries(params)]).toString();
+
+  if (opts.type === 'cti' && 'txn_index' in opts.params) {
+    let params = Object.assign(
+      { schema: opts.protocol },
+      { type: opts.type },
+      opts.opts?.version && { version: opts.version },
+      { id: new cti.Encode(opts.params).cti }
     );
+    query = new URLSearchParams([...Object.entries(params)]).toString();
+  }
 
-  let string = '';
-  Object.entries(opts.params).map((entry, index) => {
-    string += String(entry[0]);
-    string += '=' + String(entry[1]);
-    if (index + 1 !== Object.entries(opts.params).length) string += '&';
-  });
-
-  return opts.protocol + '-v' + opts.version + ':' + opts.type + '?' + string;
+  return new URL(`${opts.domain}?${query}`).toString();
 }
 
 export default {
@@ -142,4 +157,5 @@ export default {
   getType,
   getProtocol,
   convertToUri,
+  convertToUrl,
 };

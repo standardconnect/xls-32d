@@ -32,6 +32,7 @@ export interface XAccountEncodeParams {
 export interface IAccountEncodeOpts {
   type: 'account';
   params: IAccountEncodeParams | XAccountEncodeParams;
+  opts?: ExtendedEncodeOpts;
 }
 
 export interface ILedgerEncodeParams {
@@ -41,6 +42,7 @@ export interface ILedgerEncodeParams {
 export interface ILedgerEncodeOpts {
   type: 'ledger';
   params: ILedgerEncodeParams;
+  opts?: ExtendedEncodeOpts;
 }
 
 export interface ITxEncodeParams {
@@ -50,6 +52,7 @@ export interface ITxEncodeParams {
 export interface ITxEncodeOpts {
   type: 'tx';
   params: ITxEncodeParams;
+  opts?: ExtendedEncodeOpts;
 }
 
 export interface IPayloadEncodeParams {
@@ -59,6 +62,7 @@ export interface IPayloadEncodeParams {
 export interface IPayloadEncodeOpts {
   type: 'payload';
   params: IPayloadEncodeParams;
+  opts?: ExtendedEncodeOpts;
 }
 
 export interface IOfflineEncodeParams {
@@ -68,6 +72,7 @@ export interface IOfflineEncodeParams {
 export interface IOfflineEncodeOpts {
   type: 'offline';
   params: IOfflineEncodeParams;
+  opts?: ExtendedEncodeOpts;
 }
 
 export interface ITokenEncodeParams {
@@ -78,6 +83,7 @@ export interface ITokenEncodeParams {
 export interface ITokenEncodeOpts {
   type: 'token';
   params: ITokenEncodeParams;
+  opts?: ExtendedEncodeOpts;
 }
 
 export interface INFTokenEncodeParams {
@@ -87,6 +93,13 @@ export interface INFTokenEncodeParams {
 export interface INFTokenEncodeOpts {
   type: 'nftoken';
   params: INFTokenEncodeParams;
+  opts?: ExtendedEncodeOpts;
+}
+
+export interface ICtiEncodeOpts {
+  type: 'cti';
+  params: ICtiEncodeParams;
+  opts?: ExtendedEncodeOpts;
 }
 
 /* export type EncodeOpts =
@@ -98,13 +111,36 @@ export interface INFTokenEncodeOpts {
   | INFTokenEncodeOpts
   | IOfflineEncodeOpts; */
 
-export interface EncodeOpts {
+export interface ExtendedEncodeOpts {
+  version?: boolean;
+  serialize?: boolean;
+}
+
+export interface URIEncodeOpts {
   type: string;
+  opts?: ExtendedEncodeOpts;
   params:
     | IPayloadEncodeParams
     | ICtiEncodeParams
     | ITxEncodeParams
     | IAccountEncodeParams
+    | XAccountEncodeParams
+    | ITokenEncodeParams
+    | ILedgerEncodeParams
+    | INFTokenEncodeParams
+    | IOfflineEncodeParams;
+}
+
+export interface URLEncodeOpts {
+  type: string;
+  domain: string;
+  opts?: ExtendedEncodeOpts;
+  params:
+    | IPayloadEncodeParams
+    | ICtiEncodeParams
+    | ITxEncodeParams
+    | IAccountEncodeParams
+    | XAccountEncodeParams
     | ITokenEncodeParams
     | ILedgerEncodeParams
     | INFTokenEncodeParams
@@ -116,6 +152,7 @@ export type EncodeParamsTypes = [
   ICtiEncodeParams,
   ITxEncodeParams,
   IAccountEncodeParams,
+  XAccountEncodeParams,
   ITokenEncodeParams,
   ILedgerEncodeParams,
   INFTokenEncodeParams,
@@ -127,4 +164,5 @@ export interface AddedEncodeOpts {
   version: string;
 }
 
-export type ExtendedEcodingOpts = EncodeOpts & AddedEncodeOpts;
+export type ExtendedURIEncodingOpts = URIEncodeOpts & AddedEncodeOpts;
+export type ExtendedURLEncodingOpts = URLEncodeOpts & AddedEncodeOpts;

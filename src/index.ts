@@ -1,7 +1,8 @@
 import utils from 'utils/index';
-import { decode, encode } from 'helpers/index';
+import { uri, url } from 'helpers/index';
 import { generateQRCodeToBase64 as qr } from 'utils/qr';
+import * as types from 'types';
 
-export { decode, encode, utils, qr };
+export { uri, url, utils, qr, types };
 
-export default { decode, encode, qr, utils };
+export default { uri, url, qr, utils, types };
